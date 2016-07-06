@@ -1,0 +1,33 @@
+<!doctype html>
+<head>
+    <title>Payun-payun - step by step development</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../styles.css" type="text/css">
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="../prism.css" type="text/css">
+    <script src="../prism.js"></script>
+
+    <script src="../phaser.min.js"></script>
+    <script src="main.js"></script>
+<body>
+    <h1><a href="../index.html">Payun-payun</a></h1>
+
+    <div id="game"></div>
+
+    <article class="notes">
+    <p>Sprites are, roughly, images with behaviour and movement. Most of our
+        game elements will be sprites: the player's ship, the enemies,
+        the bullets, etc. In Phaser they are instances of
+        <code class="lang-javascript">Phaser.Sprite</code>.</p>
+    <p>All sprites have an anchor point that acts at their origin of coordinates
+        for rendering and other transformations like rotating. It is common to
+        put this point at the center of the image. We can do this with
+        <code class="lang-javascript">sprite.anchor.setTo(0.5)</code>.
+    <p>If we want to use Phaser's Arcade physics engine to handle our sprite's
+        movement, etc. we need to enable it manually with
+        <code class="lang-javascript">game.physics.enable(sprite)</code>. The sprite then will have a
+        <code class="lang-javascript">body</code> property which we can manipulate.</p>
+    <p>Uniform movement can be achieved by setting the sprite speed in
+        <code class="lang-javascript">body.velocity</code>.</p>
+    </article>
+</body>

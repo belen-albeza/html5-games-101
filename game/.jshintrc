@@ -1,0 +1,6 @@
+{
+    "esnext": true,
+    "node": true,
+    "browser": true,
+    "predef": ["Phaser"]
+}
