@@ -19,3 +19,12 @@ a:hover {
 p, li {
     line-height: 1.25em;
 }
+
+h1 {
+    text-align: center;
+}
+
+canvas {
+    display: inline-block;
+    margin: 0 auto;
+}
