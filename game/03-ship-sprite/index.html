@@ -19,6 +19,9 @@
         game elements will be sprites: the player's ship, the enemies,
         the bullets, etc. In Phaser they are instances of
         <code class="lang-javascript">Phaser.Sprite</code>.</p>
+    <p>As with images, there is a factory method we can use to create sprites and
+        add them to the game world.</p>
+<pre><code class="lang-javascript">game.add.sprite(0, 0, 'ship');</code></pre>
     <p>All sprites have an anchor point that acts at their origin of coordinates
         for rendering and other transformations like rotating. It is common to
         put this point at the center of the image. We can do this with
