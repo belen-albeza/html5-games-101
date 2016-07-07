@@ -1,3 +1,31 @@
+
+// =============================================================================
+// Sprites
+// =============================================================================
+
+function Bullet(game, x, y) {
+    // call Phaser.Sprite parent constructor
+    Phaser.Sprite.call(this, game, x, y, 'bullet');
+
+    this.anchor.setTo(0.5, 1); // handle from the bottom
+
+    // set up physics
+    const SPEED = 400;
+    this.game.physics.arcade.enable(this);
+    this.body.velocity.y = -SPEED;
+}
+
+// inherit from Phaser.Sprite
+Bullet.prototype = Object.create(Phaser.Sprite.prototype);
+Bullet.prototype.constructor = Bullet;
+
+Bullet.prototype.update = function () {
+    // kill bullet and remove from world when out of the screen
+    if (this.y < 0) {
+        this.destroy();
+    }
+};
+
 //
 // Ship sprite
 //
@@ -19,6 +47,15 @@ Ship.prototype.move = function (dir) {
     this.body.velocity.x = SPEED * dir;
 };
 
+Ship.prototype.shoot = function () {
+    let y = this.y - 12; // vertical offset for bullets, rounded
+    const HALF = 22; // width of our sprite, rounded
+
+    this.game.add.existing(new Bullet(this.game, this.x + HALF, y));
+    this.game.add.existing(new Bullet(this.game, this.x - HALF, y));
+};
+
+
 // =============================================================================
 // Play game state
 // =============================================================================
@@ -29,6 +66,7 @@ PlayState.preload = function () {
     // load our image assets
     this.game.load.image('background', '../assets/background.png');
     this.game.load.image('ship', '../assets/ship.png');
+    this.game.load.image('bullet', '../assets/bullet.png');
 };
 
 PlayState.create = function () {
@@ -42,8 +80,13 @@ PlayState.create = function () {
     // register keys
     this.keys = this.game.input.keyboard.addKeys({
         left: Phaser.KeyCode.LEFT,
-        right: Phaser.KeyCode.RIGHT
+        right: Phaser.KeyCode.RIGHT,
+        space: Phaser.KeyCode.SPACEBAR
     });
+
+    this.keys.space.onDown.add(function () {
+        this.ship.shoot();
+    }, this);
 };
 
 PlayState.update = function () {
