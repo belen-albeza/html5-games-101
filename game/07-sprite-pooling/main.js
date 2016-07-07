@@ -8,21 +8,41 @@ function Bullet(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'bullet');
 
     this.anchor.setTo(0.5, 1); // handle from the bottom
+    this.game.physics.arcade.enable(this); // enable physics
 
-    // set up physics
-    const SPEED = 400;
-    this.game.physics.arcade.enable(this);
-    this.body.velocity.y = -SPEED;
+    this.reset(x, y);
 }
 
 // inherit from Phaser.Sprite
 Bullet.prototype = Object.create(Phaser.Sprite.prototype);
 Bullet.prototype.constructor = Bullet;
 
+Bullet.prototype.reset = function (x, y) {
+    // call parent method
+    Phaser.Sprite.prototype.reset.call(this, x, y);
+
+    const SPEED = 400;
+    this.body.velocity.y = -SPEED;
+};
+
 Bullet.prototype.update = function () {
-    // kill bullet when out of the screen
+    // kill bullet (this sets both alive and exists properties to false)
     if (this.y < 0) {
-        this.destroy();
+        this.kill();
+    }
+};
+
+// Creates a new bullet object, using sprite pooling
+Bullet.spawn = function (group, x, y) {
+    let bullet = group.getFirstExists(false);
+    // no free slot found, we need to create a new sprite
+    if (bullet === null) {
+        bullet = new Bullet(group.game, x, y);
+        group.add(bullet);
+    }
+    // free slot found! we just need to reset the sprite to the initial position
+    else {
+        bullet.reset(x, y);
     }
 };
 
@@ -47,12 +67,12 @@ Ship.prototype.move = function (dir) {
     this.body.velocity.x = SPEED * dir;
 };
 
-Ship.prototype.shoot = function () {
+Ship.prototype.shoot = function (group) {
     let y = this.y - 12; // vertical offset for bullets, rounded
     const HALF = 22; // width of our sprite, rounded
 
-    this.game.add.existing(new Bullet(this.game, this.x + HALF, y));
-    this.game.add.existing(new Bullet(this.game, this.x - HALF, y));
+    Bullet.spawn(group, this.x + HALF, y);
+    Bullet.spawn(group, this.x - HALF, y);
 };
 
 
@@ -76,6 +96,8 @@ PlayState.create = function () {
     // create the sprite ship and add it to the game world
     this.ship = new Ship(this.game, 256, 436);
     this.game.add.existing(this.ship);
+    // create a group to manage bullets
+    this.bullets = this.game.add.group();
 
     // register keys
     this.keys = this.game.input.keyboard.addKeys({
@@ -85,7 +107,7 @@ PlayState.create = function () {
     });
 
     this.keys.space.onDown.add(function () {
-        this.ship.shoot();
+        this.ship.shoot(this.bullets);
     }, this);
 };
 
