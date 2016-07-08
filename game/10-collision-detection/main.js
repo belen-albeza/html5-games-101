@@ -196,7 +196,17 @@ PlayState.update = function () {
         let x = this.game.rnd.between(0, this.game.world.width); // random x
         Alien.spawn(this.aliens, x, -50);
     }
+
+    // handle collisions
+    // bullet vs aliens overlap text with bounding boxes
+    this.game.physics.arcade.overlap(this.bullets, this.aliens,
+    function (bullet, alien) {
+        // kill both of them
+        bullet.kill();
+        alien.kill();
+    });
 };
+
 
 
 window.onload = function() {
