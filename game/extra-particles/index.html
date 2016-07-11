@@ -1,0 +1,26 @@
+<!doctype html>
+<head>
+    <title>Payun-payun - step by step development</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../styles.css" type="text/css">
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="../prism.css" type="text/css">
+    <script src="../prism.js"></script>
+
+    <script src="../phaser.min.js"></script>
+    <script src="main.js"></script>
+<body>
+    <h1><a href="../index.html">Payun-payun</a></h1>
+
+    <div id="game"></div>
+
+    <article class="notes">
+    <p>Particle systems allow us to create cool visual effects, such as flames,
+        rain, smoke, etc. In Phaser particles are created via an emitter
+        (<code class="lang-javascript">Phaser.Particles.Arcade.Emitter</code>),
+        which handles their creation and life cycle.</p>
+    <p>To create explosions, we will have a single emitter instance that will
+        burst a wave of particles (with the <code class="lang-javascript">explode</code>
+        method).</p>
+    </article>
+</body>
