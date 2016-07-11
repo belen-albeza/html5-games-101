@@ -28,3 +28,7 @@ canvas {
     display: inline-block;
     margin: 0 auto;
 }
+
+.contrast-bg {
+    background: #000;
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<head>
+    <title>Payun-payun - step by step development</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../styles.css" type="text/css">
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="../prism.css" type="text/css">
+    <script src="../prism.js"></script>
+
+    <script src="../phaser.min.js"></script>
+    <script src="main.js"></script>
+<body>
+    <h1><a href="../index.html">Payun-payun</a></h1>
+
+    <div id="game"></div>
+
+    <article class="notes">
+    <p>Phaser supports both bitmap fonts and CSS fonts to render text. In this
+        game we will use <strong>monospaced bitmap fonts</strong>, implemented
+        in the <code class="lang-javascript">Phaser.RetroFont</code> class.</p>
+    <p>Bitmap fonts are implemented with an image asset containing all the
+        characters we want to render. They are similar to spritesheets:</p>
+    <p><img src="../assets/retrofont.png" class="contrast-bg"></p>
+    <p>Bitmap fonts are <em>not</em> game entities. We need to associate a
+        <code class="lang-javascript">Phaser.Image</code> instance to a
+        <code class="lang-javascript">Phaser.RetroFont</code> one to be able to
+        render a string of text.</p>
+    <p><code class="lang-javascript">Phaser.Retrofont</code> handles the mapping
+        between the font image to single characters, as well as which string of
+        text we will render. <code class="lang-javascript">Phaser.Image</code>
+        contains the rendered string and will display it on screen.</p>
+<pre><code class="lang-javascript">// on preload
+game.load.image('font-asset', 'font.png');
+
+// on create
+const CHARSET = '012345689'; // your full charset
+let font = game.add.retroFont('font-asset', charWidth, charHeight, CHARSET);
+</code></pre>
+    </article>
+</body>
