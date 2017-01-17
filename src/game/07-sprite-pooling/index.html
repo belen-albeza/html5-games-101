@@ -1,0 +1,43 @@
+<!doctype html>
+<head>
+    <title>Payun-payun - step by step development</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../styles.css" type="text/css">
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="../prism.css" type="text/css">
+    <script src="../prism.js"></script>
+<body>
+    <h1><a href="../index.html">Payun-payun</a></h1>
+
+    <iframe width="512" height="512" src="iframe.html"></iframe>
+
+    <article class="notes">
+    <p>Sprite <strong>pooling</strong> is a technique to avoid allocating/freeing new sprites
+        often, which is costly. We can implement this technique with Phaser's class
+        to handle entity lists: <code class="lang-javascript">Phaser.Group</code>.</p>
+    <p>To spawn a new sprite, before doing a <code class="lang-javascript">new</code>
+        we check if there is an sprite of the group with its <code class="lang-javascript">exists</code>
+        flag set to <code class="lang-javascript">false</code>.</p>
+    <ul>
+        <li>If there is such sprite, we re-use it by "resurrecting" it with its <code class="lang-javascript">reset</code>
+        method.</li>
+        <li>If there is no sprite available, we instante a new one and add it to the group.</li>
+    </ul>
+    <p>The pattern is as follows:</p>
+<pre><code class="lang-javascript">MySprite.spawn = function (group, x, y) {
+    let slot = group.getFirstExists(false);
+    if (slot === null) {
+        slot = new MySprite(group.game, x, y);
+        group.add(slot);
+    }
+    else {
+        slot.reset(x, y);
+    }
+};
+</code></pre>
+    <p>The <code class="lang-javascript">reset</code> method that sprites have
+        will reset some of its properties (like <code class="lang-javascript">exists</code>)
+        as well as some physics values –for instance, it will set the body's
+        velocity to zero).</p>
+    </article>
+</body>

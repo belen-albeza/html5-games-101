@@ -1,0 +1,26 @@
+<!doctype html>
+<head>
+    <title>Payun-payun - step by step development</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../styles.css" type="text/css">
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="../prism.css" type="text/css">
+    <script src="../prism.js"></script>
+<body>
+    <h1><a href="../index.html">Payun-payun</a></h1>
+
+    <iframe width="512" height="512" src="iframe.html"></iframe>
+
+    <article class="notes">
+        <p>Music and sound effects in Phaser work in a similar way to images. We
+            load the assets in the <code class="lang-javascript">preload</code>
+            phase. Afterwards, we create instances of <code class="lang-javascript">Phaser.Sound</code>
+            that will use those audio assets we have loaded.</p>
+        <pre><code class="lang-javascript">game.load.audio('music', 'coolsong.mp3');</code></pre>
+        <p>As with images, <code class="lang-javascript">Phaser.Sound</code>
+            instances need to be added to the game world in order to be used.</p>
+<pre><code class="lang-javascript">let sfx = game.add.audio('explosion');
+sfx.play();
+</code></pre>
+    </article>
+</body>

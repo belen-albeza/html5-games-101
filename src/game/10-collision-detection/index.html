@@ -1,0 +1,25 @@
+<!doctype html>
+<head>
+    <title>Payun-payun - step by step development</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../styles.css" type="text/css">
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="../prism.css" type="text/css">
+    <script src="../prism.js"></script>
+<body>
+    <h1><a href="../index.html">Payun-payun</a></h1>
+
+    <iframe width="512" height="512" src="iframe.html"></iframe>
+
+    <article class="notes">
+    <p>Phaser's Arcade physics engine provides collision detection with
+        <strong>bounding boxes</strong>.</p>
+    <p>To make the bullets destroy aliens, we need to check for overlapping
+        between these groups of sprites every frame, with the
+        <code class="lang-javascript">overlap</code>. We will provide a callback
+        to this method to specify what we want to do in case there is a collision.</p>
+<pre><code class="lang-javascript">game.physics.arcade.overlap(bulletGroup, enemyGroup, function (bullet, enemy) {
+    enemy.kill();
+});</code></pre>
+    </article>
+</body>

@@ -1,0 +1,659 @@
+doctype html
+head
+    title Let's make a game with JavaScript
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+
+    //- minideck core files
+    link(rel='stylesheet', href='minideck/minideck.css', type='text/css')
+    script(src='minideck/minideck.js')
+
+    //- remove these if you don't need syntax highlighting
+    script(src='minideck/vendor/highlight.js')
+    link(rel='stylesheet', href='minideck/vendor/highlight.css', type='text/css')
+
+    //- your own theme
+    link(rel='stylesheet', href='minideck/simple-theme.css', type='text/css')
+body
+    article#deck
+        header
+            progress
+        section.title
+            h1 Let's make a game with JavaScript!
+            p Belén Albeza
+            p
+                a(href='https://belenalbeza.com') belenalbeza.com
+                |&nbsp;//&nbsp;
+                a(href='https://twitter.com/ladybenko') @ladybenko
+            p.breathe Deck:<br>
+                a(href='https://belen-albeza.github.io/html5-games-101') https://belen-albeza.github.io/html5-games-101
+
+        section
+            h1 Step 1: Init Phaser
+            p Goals:
+            ul
+                li Create a drawing context (#[code.lang-html &lt;canvas&gt;]).
+                li Setup the game loop.
+        section
+            p In our #[code.language-bash index.html]:
+            pre: code.language-html.
+                &lt;body&gt;
+                    &lt;div id="game"&gt;&lt;/div&gt;
+                &lt;/body&gt;
+        section
+            p Instantiate #[code.language-js Phaser.Game]:
+            pre: code.language-js.
+                window.onload = function() {
+                    new Phaser.Game(512, 512, Phaser.AUTO, 'game');
+                };
+            ul
+                li.md-step This attaches a #[code.language-html &lt;canvas&gt;] to #[code.language-html #game]
+                li.md-step We can choose between #[code.language-js Phaser.CANVAS], #[code.language-js Phaser.WEBGL] or WebGL with a Canvas fallback (#[code.language-js Phaser.AUTO])
+        section
+            h1 The game loop
+            p TODO: figure
+
+        section
+            p Setup the game loop:
+            pre: code.language-js.
+                <ins>PlayState = {};
+                PlayState.preload = function () {};
+                PlayState.create = function () {};</ins>
+
+                window.onload = function () {
+                    new Phaser.Game(512, 512, Phaser.AUTO, 'game'<ins>, PlayState</ins>);
+                };
+            p.md-step There are more phases! #[code init], #[code update], etc.
+        section.centered
+            iframe(src='game/01-init-phaser/iframe.html', width=512, height=512)
+
+        section
+            h1 Step 2: Draw the background
+            p Goals:
+            ul
+                li Load an image asset
+                li Render the image
+        section
+            p Load the image asset and assign a key to it:
+            pre: code.language-js.
+                <del>PlayState.preload = function () {};</del>
+                <ins>PlayState.preload = function () {
+                    this.game.load.image('background', 'assets/background.png');
+                }</ins>
+            ul
+                li.md-step This assumes images are stored in a #[code assets] folder.
+                li.md-step States keep a reference to the game (#[code this.game])
+        section
+            p Now add a #[code Phaser.Image] to the game world
+            pre: code.language-js.
+                <del>PlayState.create = function () {};</del>
+                <ins>PlayState.create = function () {
+                    this.game.add.image(0, 0, 'background');
+                }</ins>
+            ul
+                li.md-step #[code this.game.add] is a factory to create game entities
+        section.centered
+            iframe(src='game/02-render-image/iframe.html', width=512, height=512)
+        section
+            h1 How does it work?
+            ul
+                li Phaser is smart enough to #[strong update] and #[strong render] game entities each frame
+                li Game entities include: images, sprites, text, particles, etc.
+
+        section
+            h1 Step 3: Create the ship sprite
+            p Goals:
+            ul
+                li Create a sprite to handle the player's ship
+                li Move this sprite
+        section
+            p Load the ship asset image and make a sprite with it:
+            pre: code.language-js.
+                PlayState.preload = function () {
+                    // ...
+                    <ins>this.game.load.image('ship', 'assets/ship.png');</ins>
+                };
+                PlayState.create = function (){
+                    // ...
+                    <ins>this.ship = this.game.add.sprite(256, 436, 'ship');</ins>
+                };
+        section
+            p Problem: the ship is not totally centered horizontally
+            p: img.figure(src='images/anchor_problem.png', alt='Anchor problem')
+
+        section
+            p Solution: #[strong anchor points]
+            p TODO: figure
+
+        section
+            p Tweak the anchor in the sprite:
+            pre: code.language-js.
+                this.ship = this.game.add.sprite(256, 436, 'ship');
+                <ins>this.ship.anchor.setTo(0.5);</ins>
+        section
+            p Let's move the sprite
+            ul
+                li We can easily move the sprite using Phaser's built-in #[strong physics engine].
+                li Since physics are costly, we need to manually enable them in our entities
+                li Once enabled, sprites have a #[code body] property we can tweak
+        section
+            p For now, we'll just make it move automatically to the right…
+            pre: code.language-js.
+                this.ship = this.game.add.sprite(256, 436, 'ship');
+                this.ship.anchor.setTo(0.5);
+
+                <ins>// setup physics for the ship sprite
+                this.game.physics.arcade.enable(this.ship);
+                this.ship.body.velocity.x = 100;</ins>
+        section.centered
+            iframe(src='game/03-ship-sprite/iframe.html', width=512, height=512)
+
+        section
+            h1 Step 4: Use custom sprites
+            p Why?
+            ul
+                li Using #[code Phaser.Sprite] is OK for sprites with almost no behavior…
+                li We might want own classes and methods, so we can have things like #[code ship.shoot()]
+            p #[b Goal]: use a custom class for the ship sprite.
+
+        section
+            p We need to inherit from #[code Phaser.Sprite]:
+            pre: code.language-js.
+                <ins>function Ship(game, x, y) {
+                    // call Phaser.Sprite parent constructor
+                    Phaser.Sprite.call(this, game, x, y, 'ship');
+                    // custom init code here…
+                }</ins>
+
+                <ins>// inherit from Phaser.Sprite
+                Ship.prototype = Object.create(Phaser.Sprite.prototype);
+                Ship.prototype.constructor = Ship;</ins>
+            p.md-step In ES6 is easier :)
+
+        section
+            p Move our anchor and physics tweaks to the constructor:
+            pre: code.language-js.
+                function Ship(game, x, y) {
+                    Phaser.Sprite.call(this, game, x, y, 'ship');
+                    <ins>this.anchor.setTo(0.5);
+                    this.game.physics.arcade.enable(this);
+                    this.body.velocity.x = 100;</ins>
+                }
+
+                PlayState.create = function () {
+                    // ...
+                    <del>this.ship.anchor.setTo(0.5);
+                    this.game.physics.arcade.enable(this.ship);
+                    this.ship.body.velocity.x = 100;</del>
+                };
+        section
+            p Finally, instantiate #[code Ship] instead of using a regular sprite:
+            pre: code.language-js.
+                PlayState.create = function () {
+                    // ...
+                    <del>this.ship = this.game.add.sprite(256, 436, 'ship');</del>
+                    <ins>this.ship = new Ship(this.game, 256, 436);</ins>
+                    <ins>this.game.add.existing(this.ship);</ins>
+                };
+            p.md-step #[code game.add.existing] adds a custom entity to the world.
+        section.centered
+            iframe(src='game/04-custom-sprites/iframe.html', width=512, height=512)
+
+        section
+            h1 Step 5: Keyboard input
+            p Goals:
+            ul
+                li Get the player's input from the keyboard.
+                li Move the ship left and right with the arrow keys.
+                li Make the ship shoot with the spacebar
+        section
+            p Phaser's #[strong keyboard model]:
+            ul
+                li Map physical keys to instances of #[code Phaser.Key]
+                li You can query the status of a key (ex: #[code .isDown])…
+                li …or subscribe to events (ex: #[code .onUp])
+        section
+            p Create and store #[code Phaser.Key] instances:
+            pre: code.language-js.
+                PlayState.create = function () {
+                    // register keys
+                    <ins>this.keys = this.game.input.keyboard.addKeys({
+                        left: Phaser.KeyCode.LEFT,
+                        right: Phaser.KeyCode.RIGHT,
+                        space: Phaser.KeyCode.SPACEBAR
+                    });</ins>
+                    // ...
+                };
+        section
+            p Add relevant methods to #[code Ship]:
+            pre: code.language-js.
+                <ins>Ship.prototype.move = function (dir) {
+                    this.body.velocity.x = 400 * dir;
+                };
+
+                Ship.prototype.shoot = function () {
+                    console.log('Payun!'); // TODO: implement
+                };</ins>
+        section
+            p Subscribe to #[keyUp] events for shooting:
+            pre: code.language-js.
+                PlayState.create = function () {
+                    // ...
+                    <ins>this.keys.space.onDown.add(function () {
+                        this.ship.shoot();
+                    }, this);</ins>
+                };
+        section
+            p Moving the ship is a bit different:
+            ul
+                li We want to move as long as a key is being pressed
+                li Keyboard #[em events] are not handy
+                li We need to check the #[em status] of the keys #[strong every frame]
+            p.md-step We use the #[strong #[code update] phase] in our game state to do things every frame.
+        section
+            p Our brand new #[code update] method:
+            pre: code.language-js.
+                <ins>PlayState.update = function () {
+                    if (this.keys.left.isDown) { // move left
+                        this.ship.move(-1);
+                    }
+                    else if (this.keys.right.isDown) { // move right
+                        this.ship.move(1);
+                    }
+                    else { // stop
+                        this.ship.move(0);
+                    }
+                };</ins>
+        section.centered
+            iframe(src='game/05-control-ship/iframe.html', width=512, height=512)
+
+        section
+            h1 Step 6: Shooting bullets
+            p Goals:
+            ul
+                li Create a bullet sprite that goes upwards
+                li Make the ship spawn bullets
+                li Destroy bullets when they go out of the screen
+
+        section
+            p Load the image for the bullets as usual:
+            pre: code.language-js.
+                PlayState.preload = function () {
+                    // ...
+                    <ins>this.game.load.image('ship', 'assets/bullet.png');</ins>
+                };
+
+        section
+            p The bullet sprite:
+            pre.md-step: code.language-js.
+                <ins>function Bullet(game, x, y) {
+                    Phaser.Sprite.call(this, game, x, y, 'bullet');
+                }
+
+                Bullet.prototype = Object.create(Phaser.Sprite.prototype);
+                Bullet.prototype.constructor = Bullet;</ins>
+            pre.md-step: code.language-js.
+                function Bullet(game, x, y) {
+                    Phaser.Sprite.call(this, game, x, y, 'bullet');
+
+                    <ins>this.anchor.setTo(0.5, 1); // handle from the bottom
+                    this.game.physics.arcade.enable(this);
+                    this.body.velocity.y = -400;</ins>
+                }
+
+                Bullet.prototype = Object.create(Phaser.Sprite.prototype);
+                Bullet.prototype.constructor = Bullet;
+        section
+            p Update the #[shoot] method to spawn bullets:
+            pre: code.language-js.
+                Ship.prototype.shoot = function () {
+                    <del>console.log('Payun!');</del>
+                    <ins>let y = this.y - 12; // vertical offset for bullets
+                    const HALF = 22; // half the space between the cannons
+
+                    this.game.add.existing(new Bullet(this.game, this.x + HALF, y));
+                    this.game.add.existing(new Bullet(this.game, this.x - HALF, y));</ins>
+                };
+        section
+            p Destroy the bullet when it disappears:
+            pre: code.language-js.
+                <ins>Bullet.prototype.update = function () {
+                    if (this.y < 0) {
+                        this.destroy();
+                    }
+                };</ins>
+            p.md-step Phaser will automatically call #[code Bullet.update] #[em every frame].
+
+        section.centered
+            iframe(src='game/06-shoot-bullets/iframe.html', width=512, height=512)
+
+        section
+            h1 Step 7: Sprite pooling
+            p We've got a problem:
+            ul
+                li.md-step We are creating and destroying bullets frequently
+                li.md-step This is #[em expensive]
+            p.md-step Solution? Use a pool (#[code Phaser.Group])to recycle sprites.
+
+        section
+            h1 How to recycle
+            p TODO: figure
+
+        section
+            p Create the pool for the bullets:
+            pre: code.language-js.
+                PlayState.create = function () {
+                    // ...
+                    <ins>this.bullets = this.game.add.group();</ins>
+                };
+
+        section
+            p A new #[code spawn] method:
+            pre: code.language-js.
+                <ins>Bullet.spawn = function (group, x, y) {
+                    let bullet = group.getFirstExists(false);
+
+                    if (bullet === null) {
+                        bullet = new Bullet(group.game, x, y);
+                        group.add(bullet);
+                    }
+                    else {
+                        bullet.reset(x, y);
+                    }
+                };</ins>
+        section
+            p Override #[code Bullet.reset] (it's an inherited method)
+            pre: code.language-js.
+                <ins>Bullet.prototype.reset = function (x, y) {
+                    Phaser.Sprite.prototype.reset.call(this, x, y);
+
+                    this.body.velocity.y = -400;
+                };</ins>
+        section
+            p Use the new #[code spawn] method to pool the bullets:
+            pre.md-step: code.language-js.
+                Ship.prototype.shoot = function (<ins>group</ins>) {
+                    let y = this.y - 12;
+                    const HALF = 22;
+
+                    this.game.add.existing(new Bullet(this.game, this.x + HALF, y));
+                    this.game.add.existing(new Bullet(this.game, this.x - HALF, y));
+                };
+            pre.md-step: code.language-js.
+                Ship.prototype.shoot = function () {
+                    let y = this.y - 12;
+                    const HALF = 22;
+
+                    <del>this.game.add.existing(new Bullet(this.game, this.x + HALF, y));
+                    this.game.add.existing(new Bullet(this.game, this.x - HALF, y));</del>
+                };
+            pre.md-step: code.language-js.
+                Ship.prototype.shoot = function (group) {
+                    let y = this.y - 12;
+                    const HALF = 22;
+
+                    <ins>Bullet.spawn(group, this.x + HALF, y);
+                    Bullet.spawn(group, this.x - HALF, y);</ins>
+                };
+        section
+            p Update the key callback to pass the pool:
+            pre: code.language-js.
+                this.keys.space.onDown.add(function () {
+                    this.ship.shoot(<ins>this.bullets</ins>);
+                }, this);
+        section
+            p Change #[code destroy] for #[code kill] so sprites are not released:
+            pre: code.language-js.
+                Bullet.update = function () {
+                    if (this.y < 0) {
+                        <del>this.destroy();</del>
+                        <ins>this.kill();</ins>
+                    }
+                };
+            p.md-step #[code kill()] sets both #[code alive] and #[code exists] to #[code false].
+
+        section.centered
+            iframe(src='game/07-sprite-pooling/iframe.html', width=512, height=512)
+
+        section
+            h1 Step 8: Animated aliens
+            p Goals:
+            ul
+                li Create a new #[code Alien] sprite
+                li Animate the aliens with #[strong keyframes] of a #[strong spritesheet].
+            p
+                img(src='images/alien_spritesheet.png', alt='Sprite sheet')
+                |&nbsp;→&nbsp;
+                img(src='images/alien_animated.gif', alt='Animated alien')
+        section
+            p Load the spritesheet asset:
+            pre: code.language-js.
+                PlayState.preload = function () {
+                    // ...
+                    <ins>this.game.load.spritesheet('alien', 'assets/alien.png', 40, 44);</ins>
+                };
+            p.md-step We need to pass along the #[strong width] and the #[strong height] of each frame.
+        section
+            p The #[code Alien] sprite:
+            pre.md-step: code.language-js.
+                <ins>function Alien(game, x, y) {
+                    Phaser.Sprite.call(this, game, x, y, 'alien');
+                    this.anchor.setTo(0.5);
+                    this.game.physics.enable(this);
+                }
+
+                Alien.prototype = Object.create(Phaser.Sprite.prototype);
+                Alien.prototype.constructor = Alien;</ins>
+            pre.md-step: code.language-js.
+                function Alien(game, x, y) {
+                    Phaser.Sprite.call(this, game, x, y, 'alien');
+                    this.anchor.setTo(0.5);
+                    this.game.physics.enable(this);
+
+                    <ins>// add animation and give it a name
+                    this.animations.add('fly', [0, 1]);
+                    // play at 2fps, looped
+                    this.animations.play('fly', 2, true);</ins>
+                }
+        section
+            p Let's try it by creating a single alien:
+            pre: code.language-js.
+                PlayState.create = function () {
+                    // ...
+                    <ins>// add sample alien
+                    this.game.add.existing(new Alien(this.game, 50, 50));</ins>
+                };
+        section.centered
+            iframe(src='game/08-sprite-animation/iframe.html', width=512, height=512)
+
+        section
+            h1 Step 9: Enemy waves
+            p Goals:
+            ul
+                li Spawn aliens using a sprite pool
+                li Give the aliens a random speed
+            p.md-step This is almost identical to what we did with #[code Bullet].
+        section
+            p Create a #[code Phaser.Group] to act as a pool:
+            pre: code.language-js.
+                PlayState.create = function () {
+                    // ...
+                    <ins>this.aliens =  this.game.add.group();</ins>
+                };
+        section
+            p Add a #[code spawn] method to #[code Alien].<br>
+            pre: code.language-js.
+                <ins>Alien.spawn = function (group, x, y) {
+                    // ...
+                    // this is identical to Bullet.spawn
+                };</ins>
+            p: small We already know how to do this.<br>
+                | This is also a good opportunity to refactor.
+        section
+            p Override #[code reset] and set random speeds:
+            pre: code.language-js.
+                <ins>Alien.prototype.reset = function (x, y) {
+                    Phaser.Sprite.prototype.reset.call(this, x, y);
+
+                    // set random horizontal and vertical speed for the alien
+                    this.body.velocity.y = this.game.rnd.between(100, 400);
+                    this.body.velocity.x = this.game.rnd.between(-100, 100);
+                };</ins>
+            p.md-step #[code game.rnd] is Phaser's random number generator.
+        section
+            p Call #[code reset] from the constructor to set a random speed initially too:
+            pre: code.language-js.
+                function Alien(game, x, y) {
+                    // ...
+                    <ins>this.reset(x, y);</ins>
+                }
+            p.md-step This is a way to reuse code.
+        section
+            p Destroy the aliens once they are out of screen:
+            pre: code.language-js.
+                <ins>Alien.prototype.update = function () {
+                    if (this.y > this.game.world.height + this.height) {
+                        this.kill();
+                    }
+                };</ins>
+        section
+            p Randomly spawn aliens!
+            pre: code.language-js.
+                PlayState.update = function () {
+                    // ...
+                    <ins>// randomly spawn new aliens (10% chance every frame)
+                    if (this.game.rnd.between(0, 100) < 10) {
+                        let x = this.game.rnd.between(0, this.game.world.width);
+                        Alien.spawn(this.aliens, x, -50);
+                    }</ins>
+                };
+        section.centered
+            iframe(src='game/09-alien-waves/iframe.html', width=512, height=512)
+
+        section
+            h1 Step 10: collision detection
+            p Goals:
+            ul
+                li Kill the aliens when the bullets touch them
+        section
+            h1 BBox collision detection
+            p TODO: figure
+            p Phaser's #[strong Arcade physics] engine already implements this for us.
+        section
+            p Use #[code overlap()] to #[em detect] collisions between sprites:
+            pre: code.language-js.
+                PlayState.update = function () {
+                    // ...
+                    <ins>this.game.physics.arcade.overlap(
+                        this.bullets,
+                        this.aliens,
+                        function (bullet, alien) {
+                            bullet.kill();
+                            alien.kill();
+                        }
+                    );</ins>
+                };
+        section.centered
+            iframe(src='game/10-collision-detection/iframe.html', width=512, height=512)
+
+        section
+            h1 Music &amp; sound
+            p Goals:
+            ul
+                li Incorporate SFX for actions in our game
+                li Play background music
+            p.md-step #[strong Audio is #[em crucial] for a game]. More important than graphics.
+        section
+            h1 Audio in Phaser
+            ul
+                li Loading of assets like images, spritesheets, etc.
+                li.md-step Songs, SFX, etc. are game entities: #[code Phaser.Sound]
+                    ul
+                        li but obviously they don't get "rendered"!
+                li.md-step If you need compressed assets, provide #[em both] OGG and MP3.
+
+        section
+            p Load our audio assets in #[code preload], as usual:
+            pre: code.language-js.
+                PlayState.preload = function () {
+                    // ...
+                    <ins>this.game.load.audio('music',
+                        ['assets/bgm.ogg', 'assets/bgm.mp3']);
+                    this.game.load.audio('shoot', 'assets/shoot.wav');
+                    this.game.load.audio('boom', 'assets/boom.wav');</ins>
+                };
+            p.md-step If we provide an array of files, Phaser will use whatever the browser is able to play.
+        section
+            p Add audio entities (#[code Phaser.Sound]) to the game world:
+            pre: code.language-js.
+                PlayState.create = function () {
+                    <ins>this.audio = {
+                        music: this.game.add.audio('music'),
+                        shoot: this.game.add.audio('shoot'),
+                        explosion: this.game.add.audio('boom')
+                    };</ins>
+                    // ...
+                };
+        section
+            p Play the background music song:
+            pre: code.language-js.
+                PlayState.create = function () {
+                    this.audio = {
+                        music: this.game.add.audio('music'),
+                        shoot: this.game.add.audio('shoot'),
+                        explosion: this.game.add.audio('boom')
+                    };
+
+                    <ins>this.audio.music.loopFull();</ins>
+                };
+            p.md-step #[code loopFull()] will countinously loop the song.
+        section
+            p Play SFX for shots:
+            pre: code.language-js.
+                PlayState.create = function () {
+                    // ...
+                    this.keys.space.onDown.add(function () {
+                        this.ship.shoot(this.bullets);
+                        <ins>this.audio.shoot.play();</ins>
+                    }, this);
+                };
+            p.md-step #[code play()] will play the audio once.
+        section
+            p Play SFX for explosions:
+            pre: code.language-js.
+                PlayState.update = function () {
+                    // ...
+                    this.game.physics.arcade.overlap(
+                        this.bullets,
+                        this.aliens,
+                        function (bullet, alien) {
+                            bullet.kill();
+                            alien.kill();
+                            <ins>this.audio.explosion.play();</ins>
+                        },
+                    <ins>null, this</ins>);
+                };
+            p.md-step We can pass our own #[code this] to #[code overlap].
+        section.centered
+            iframe(src='game/11-sound/iframe.html', width=512, height=512)
+        section
+            h1 Finished!
+            h2.md-step Want more?
+            p.md-step Check out the next steps at: <br>
+                a(href='https://belen-albeza.github.io/html5-games-101/game/') https://belen-albeza.github.io/html5-games-101/game/
+        section.centered
+            iframe(src='game/extra-particles/iframe.html', width=512, height=512)
+        section.centered
+            h1 Thanks!
+            h2: a(href='https://twitter.com/ladybenko') @ladybenko
+
+
+    //- init the deck
+    script.
+        document.addEventListener('DOMContentLoaded', function () {
+            hljs.initHighlightingOnLoad();
+
+            let deck = new MiniDeck(
+                document.querySelectorAll('#deck > section'),
+                document.querySelector('#deck progress'));
+        });

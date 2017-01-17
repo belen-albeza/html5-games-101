@@ -1,0 +1,30 @@
+<!doctype html>
+<head>
+    <title>Payun-payun - step by step development</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../styles.css" type="text/css">
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="../prism.css" type="text/css">
+    <script src="../prism.js"></script>
+<body>
+    <h1><a href="../index.html">Payun-payun</a></h1>
+
+    <iframe width="512" height="512" src="iframe.html"></iframe>
+
+    <article class="notes">
+    <p>The game state can access the <code class="lang-javascript">Phaser.Game</code> instance via
+        <code class="lang-javascript">this.game</code>.</p>
+    <p>In the <code class="lang-javascript">preload</code> function we can load our image assets using
+        the <code class="lang-javascript">Phaser.Loader</code> instance that is available in
+        <code class="lang-javascript">game.load</code>. We supply a string key –we will use this later
+        to reference the image– and the path to the asset.</p>
+    <p>Images are a game entity in Phaser: an instance of
+        <code class="lang-javascript">Phaser.Image</code>. When an image is in our game world, it will
+        automatically be rendered each frame. We can create an image and add it
+        to this game world via <code class="lang-javascript">game.add</code>, which is a factory for
+        multiple game entities. To do this, we call <code class="lang-javascript">game.add.image</code>
+        and provide the coordinates and the image key –the one we used in
+        <code class="lang-javascript">preload</code>.</p>
+<pre><code class="lang-javascript">game.add.image(0, 0, 'background'); // render image at position 0,0</code></pre>
+    </article>
+</body>
