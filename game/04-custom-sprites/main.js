@@ -9,6 +9,7 @@ function Ship(game, x, y) {
 
     this.anchor.setTo(0.5); // handle the sprite by its center
     this.game.physics.arcade.enable(this); // enable physics
+    this.body.velocity.x = 100;
 }
 
 // inherit from Phaser.Sprite

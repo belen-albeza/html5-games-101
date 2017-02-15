@@ -19,6 +19,11 @@ Ship.prototype.move = function (dir) {
     this.body.velocity.x = SPEED * dir;
 };
 
+Ship.prototype.shoot = function () {
+    // TODO: implement
+    console.log('Payun!');
+};
+
 // =============================================================================
 // Play game state
 // =============================================================================
@@ -42,8 +47,13 @@ PlayState.create = function () {
     // register keys
     this.keys = this.game.input.keyboard.addKeys({
         left: Phaser.KeyCode.LEFT,
-        right: Phaser.KeyCode.RIGHT
+        right: Phaser.KeyCode.RIGHT,
+        space: Phaser.KeyCode.SPACEBAR
     });
+    // subscribe to keyboard events
+    this.keys.space.onDown.add(function () {
+        this.ship.shoot();
+    }, this);
 };
 
 PlayState.update = function () {

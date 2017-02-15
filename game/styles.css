@@ -24,11 +24,13 @@ h1 {
     text-align: center;
 }
 
-canvas {
-    display: inline-block;
+iframe {
+    display: block;
     margin: 0 auto;
+    border: none;
+    width: 512px;
+    height: 512px;
 }
-
 
 .contrast-bg {
     background: #000;

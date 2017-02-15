@@ -21,8 +21,7 @@ Bullet.prototype.reset = function (x, y) {
     // call parent method
     Phaser.Sprite.prototype.reset.call(this, x, y);
 
-    const SPEED = 400;
-    this.body.velocity.y = -SPEED;
+    this.body.velocity.y = -400;
 };
 
 Bullet.prototype.update = function () {

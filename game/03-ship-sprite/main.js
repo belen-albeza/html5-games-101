@@ -13,7 +13,7 @@ PlayState.create = function () {
     // create the sprite ship
     this.ship = this.game.add.sprite(256, 436, 'ship');
     this.ship.anchor.setTo(0.5); // handle the sprite by its center
-    // setup physics for the ship sprite
+    // // setup physics for the ship sprite
     this.game.physics.arcade.enable(this.ship);
     this.ship.body.velocity.x = 100;
 };

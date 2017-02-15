@@ -155,7 +155,7 @@ PlayState.preload = function () {
     this.game.load.spritesheet('alien', '../assets/alien.png', 40, 44);
 
     // load audio assets
-    this.game.load.audio('music', '../assets/bgm.mp3');
+    this.game.load.audio('music', ['../assets/bgm.ogg', '../assets/bgm.mp3']);
     this.game.load.audio('shoot', '../assets/shoot.wav');
     this.game.load.audio('boom', '../assets/boom.wav');
 };

@@ -1,0 +1,127 @@
+/*
+general styles
+*/
+
+body {
+    font-family: 'Source Code Pro', Courier, monospace;
+    font-size: 2.5vw;
+}
+
+a, a:visited {
+    color: #00c;
+}
+
+h1, h2, h3, h4, h5, h6, p, li {
+    margin: 0.3em 0;
+}
+
+iframe {
+    border: 0;
+    background: #000;
+}
+
+.figure {
+    display: block;
+    margin: 0 auto;
+}
+
+.breathe {
+    margin-top: 5vh;
+}
+
+/*
+slides
+*/
+
+.md-slide.md-current.centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.md-slide.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+}
+
+.md-slide .md-wrapper {
+    max-width: 90vw;
+    margin: 0 auto;
+}
+
+.md-slide h1 {
+    font-size: 2em;
+}
+
+.md-slide h2 {
+    font-size: 1.5em;
+}
+
+/*
+steps
+*/
+
+.md-step:not(.md-step-active) {
+    opacity: 0.1;
+}
+
+pre.md-step:not(.md-step-current) {
+    display: none;
+}
+
+/*
+progress bar
+*/
+
+.md-progress {
+    background: #ddd;
+    color: #000;
+}
+
+.md-progress::-webkit-progress-bar {
+    background: #ddd;
+}
+
+.md-progress::-moz-progress-bar {
+  background: #000;
+}
+
+.md-progress::-webkit-progress-value {
+  background: #000;
+}
+
+/*
+prism code blocks
+*/
+
+code {
+    font-family: 'Source Code Pro', Courier, monospace;
+}
+
+:not(pre) > code {
+    padding: 0;
+    border-radius: 0;
+    background: #eee
+}
+
+pre {
+    padding: 0.1em;
+    font-size: 0.85em;
+}
+
+pre > code[class*="language-"] {
+    background: #fafafa;
+}
+
+code[class*="language-"] ins {
+    background: #dbffdb;
+    text-decoration: none;
+}
+
+code[class*="language-"] del {
+    background: #ffecec;
+    text-decoration: line-through;
+}

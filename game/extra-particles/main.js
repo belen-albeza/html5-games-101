@@ -184,7 +184,7 @@ PlayState.preload = function () {
     this.game.load.image('font', '../assets/retrofont.png');
 
     // load audio assets
-    this.game.load.audio('music', '../assets/bgm.mp3');
+    this.game.load.audio('music', ['../assets/bgm.ogg', '../assets/bgm.mp3']);
     this.game.load.audio('shoot', '../assets/shoot.wav');
     this.game.load.audio('boom', '../assets/boom.wav');
 };
