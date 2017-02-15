@@ -73,7 +73,9 @@ body
                 li.md-step We can choose between #[code.language-js Phaser.CANVAS], #[code.language-js Phaser.WEBGL] or WebGL with a Canvas fallback (#[code.language-js Phaser.AUTO])
         section
             h1 The game loop
-            p TODO: figure
+            p
+                img.md-step(src='images/game_loop.png')
+                img.md-step(src='images/game_state.png')
 
         section
             p Setup the game loop:
@@ -145,7 +147,7 @@ body
 
         section
             p Solution: #[strong anchor points]
-            p TODO: figure
+            p.breathe: img.figure(src='images/anchors.svg')
 
         section
             p Tweak the anchor in the sprite:
@@ -359,7 +361,10 @@ body
 
         section
             h1 How to recycle
-            p TODO: figure
+            p: img(src='images/recycle.svg')
+            ul
+                li Sprites <em>stay</em> in the game tree with a flag that marks them as "zombies".
+                li Next time a sprite needs to be created, it looks for a free spot at the pool first.
 
         section
             p Create the pool for the bullets:
@@ -432,7 +437,7 @@ body
                         <ins>this.kill();</ins>
                     }
                 };
-            p.md-step #[code kill()] sets both #[code alive] and #[code exists] to #[code false].
+            p.md-step #[code kill()] sets #[code exists] to #[code false].
 
         section.centered
             iframe(src='game/07-sprite-pooling/iframe.html', width=512, height=512)
@@ -559,8 +564,10 @@ body
                 li Kill the aliens when the bullets touch them
         section
             h1 BBox collision detection
-            p TODO: figure
-            p Phaser's #[strong Arcade physics] engine already implements this for us.
+            p: img.figure(src='images/bboxes.svg')
+            ul
+                li Simple, very fast intersections between rectangles and circles.
+                li Phaser's #[strong Arcade physics] engine already implements this for us.
         section
             p Use #[code overlap()] to #[em detect] collisions between sprites:
             pre: code.language-js.

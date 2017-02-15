@@ -155,10 +155,12 @@ MiniDeck.prototype._disableIframes = function () {
             if (iframe.src) {
                 iframe.dataset.src = iframe.src;
                 iframe.removeAttribute('src');
+                iframe.contentWindow.location.reload();
             }
         }
     });
 };
+
 
 MiniDeck.prototype._enableIframesForSlide = function (index) {
     let iframes = this.slides[index].querySelectorAll('iframe');
