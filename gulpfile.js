@@ -30,3 +30,13 @@ gulp.task('dev', function () {
         server: ['src', '.tmp']
     });
 });
+
+gulp.task('dist', ['build'], function () {
+    return gulp.src(['.tmp/**/*', 'src/**/*', '!**/*.pug'])
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('deploy', ['dist'], function () {
+    return gulp.src(['dist/**/*'])
+        .pipe(ghPages());
+});
