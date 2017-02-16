@@ -22,7 +22,7 @@ gulp.task('clean', function () {
     return del(['.tmp', 'dist']);
 });
 
-gulp.task('dev', function () {
+gulp.task('dev', ['build'], function () {
     gulp.watch('src/**/*.{css,js}').on('change', browserSync.reload);
     gulp.watch('src/index.pug', ['pug']);
 
