@@ -421,7 +421,7 @@ Bullet.prototype.constructor = Bullet;</code></pre>
     this.game.add.existing(new Bullet(this.game, this.x + HALF, y));
     this.game.add.existing(new Bullet(this.game, this.x - HALF, y));
 };</code></pre>
-      <pre class="md-step"><code class="language-js">Ship.prototype.shoot = function () {
+      <pre class="md-step"><code class="language-js">Ship.prototype.shoot = function (group) {
     let y = this.y - 12;
     const HALF = 22;
 
