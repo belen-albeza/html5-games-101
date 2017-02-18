@@ -407,7 +407,7 @@ body
                     this.game.add.existing(new Bullet(this.game, this.x - HALF, y));
                 };
             pre.md-step: code.language-js.
-                Ship.prototype.shoot = function () {
+                Ship.prototype.shoot = function (group) {
                     let y = this.y - 12;
                     const HALF = 22;
 
